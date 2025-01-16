@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :admin_users, ActiveAdmin::Devise.config
+  devise_for :users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
