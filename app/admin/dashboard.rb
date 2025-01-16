@@ -12,5 +12,28 @@ ActiveAdmin.register_page "Dashboard" do
         text_node "file to get started."
       end
     end
+
+    panel "Recent Posts" do
+      table_for Post.order(created_at: :desc).limit(5) do
+        column(:title) { |post| link_to post.title, admin_post_path(post) }
+        column :created_at
+        column :published
+      end
+    end
+
+    panel "Statistics" do
+      div do
+        "Total Posts: #{Post.count}"
+      end
+    end
+
+    panel "Quick Links" do
+      div do
+        ul do
+          li link_to "View All Posts", admin_posts_path
+          li link_to "Create a New Post", new_admin_post_path
+        end
+      end
+    end
   end
 end

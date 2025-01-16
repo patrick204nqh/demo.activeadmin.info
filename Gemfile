@@ -12,6 +12,7 @@ gem "importmap-rails"
 
 gem "activeadmin", "4.0.0.beta14" # github: "activeadmin/activeadmin", branch: "master"
 gem "devise"
+gem "draper"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]

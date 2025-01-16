@@ -29,3 +29,8 @@
 
 en:
   hello: "Hello world"
+  active_admin:
+    dashboard: "Creative Space"
+    resources:
+      post:
+        new_model: "New Post"
