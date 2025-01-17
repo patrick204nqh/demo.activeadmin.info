@@ -7,4 +7,31 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
-User.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
+admin = User.create!(email: 'admin@example.com', password: 'password', password_confirmation: 'password') if Rails.env.development?
+
+# Create multiple Categories and Posts using Faker
+require 'faker'
+
+categories = ["Technology", "Health", "Travel", "Food", "Education"].map do |category_name|
+  Category.find_or_create_by!(name: category_name)
+end
+
+categories.each do |category|
+  3.times do
+    post = Post.create!(
+      title: Faker::Book.title,
+      content: Faker::Lorem.paragraphs(number: 3).join("\n\n"),
+      category: category
+    )
+    
+    # Create comments for each post
+    2.times do
+      ActiveAdmin::Comment.create!(
+        namespace: "admin",
+        author: admin,
+        resource: post,
+        body: Faker::Quotes::Shakespeare.hamlet_quote,
+      )
+    end
+  end
+end

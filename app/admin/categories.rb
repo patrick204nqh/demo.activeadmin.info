@@ -1,18 +1,8 @@
 ActiveAdmin.register Category do
   menu parent: "Blog"
 
-  # Specify parameters which should be permitted for assignment
   permit_params :name
 
-  # or consider:
-  #
-  # permit_params do
-  #   permitted = [:name]
-  #   permitted << :other if params[:action] == 'create' && current_user.admin?
-  #   permitted
-  # end
-
-  # For security, limit the actions that should be available
   actions :all, except: []
 
   # Add or remove filters to toggle their visibility
@@ -38,6 +28,16 @@ ActiveAdmin.register Category do
       row :name
       row :created_at
       row :updated_at
+    end
+
+    panel "Articles" do
+      table_for category.posts do
+        column :id
+        column :title
+        column :content
+        column :created_at
+        column :updated_at
+      end
     end
   end
 
