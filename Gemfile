@@ -15,6 +15,8 @@ gem "activeadmin", "4.0.0.beta14" # github: "activeadmin/activeadmin", branch: "
 gem "devise"
 gem "draper"
 gem "cancancan"
+gem "que"
+gem "que-view"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]

@@ -5,6 +5,6 @@ class Ability
 
   def initialize(user)
     can :manage, :all
-    # cannot :manage, Category if user.present?
+    cannot :manage, Category if user.present?
   end
 end

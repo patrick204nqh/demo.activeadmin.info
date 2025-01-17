@@ -10,6 +10,21 @@ x-common-networks: &common-networks
     - internal_network
     - external_network
 
+x-common-volumes: &common-volumes
+  volumes:
+    - "..:/app"
+    - gems_cache:/usr/local/bundle
+
+x-common-build: &common-build
+  build:
+    context: ..
+    dockerfile: .devcontainer/Dockerfile
+
+x-common-depends-on: &common-depends-on
+  depends_on:
+    db:
+      condition: service_healthy
+
 x-healthcheck: &healthcheck
   interval: 10s
   timeout: 5s
@@ -17,23 +32,19 @@ x-healthcheck: &healthcheck
 
 services:
   web:
-    build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
+    <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
     command: sleep infinity
     ports:
       - "5000:5000"
-    volumes:
-      - "..:/app"
-      - gems_cache:/usr/local/bundle
     env_file:
       - .env
-    depends_on:
-      db:
-        condition: service_healthy
-      mailhog:
-        condition: service_started
-    <<: *common-networks
+
+  que_worker:
+    <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
+    command: ["bundle", "exec", "que"]
+    environment:
+      <<: *common-env
+      QUE_WORKER_COUNT: 4
     
   mailhog:
     image: mailhog/mailhog:latest

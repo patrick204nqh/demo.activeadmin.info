@@ -8,5 +8,7 @@ Rails.application.routes.draw do
 
   root to: redirect("admin")
 
+  mount Que::View::Engine => '/que_view'
+
   match "*unmatched", to: "application#route_not_found", via: :all
 end
