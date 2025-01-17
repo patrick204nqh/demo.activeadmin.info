@@ -199,6 +199,7 @@ GEM
     nokogiri (1.18.1-x86_64-linux-gnu)
       racc (~> 1.4)
     orm_adapter (0.5.0)
+    pg (1.5.9)
     psych (5.2.2)
       date
       stringio
@@ -319,6 +320,7 @@ DEPENDENCIES
   draper
   faker
   importmap-rails
+  pg
   puma
   rails (~> 7.2.0)
   selenium-webdriver

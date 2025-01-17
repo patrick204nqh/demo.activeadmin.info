@@ -6,12 +6,17 @@
 #
 default: &default
   adapter: sqlite3
+  encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   timeout: 5000
 
 development:
   <<: *default
-  database: storage/development.sqlite3
+  adapter: postgresql
+  username: <%= ENV.fetch("POSTGRES_USER", "postgres") %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD", "password") %>
+  host: <%= ENV.fetch("POSTGRES_HOST", "db") %>
+  database: activeadmin_dev
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".

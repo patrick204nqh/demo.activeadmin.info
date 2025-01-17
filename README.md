@@ -20,3 +20,18 @@ Open http://localhost:5000 and login using `admin@example.com` and `password`.
 ### Tests
 
 Run `bin/rails test:all`
+
+### Docker Setup
+
+Build containers
+
+```
+docker compose -f .devcontainer/compose.yml up -d
+```
+
+Setup
+
+```
+docker compose -f .devcontainer/compose.yml exec web bin/setup
+```
+

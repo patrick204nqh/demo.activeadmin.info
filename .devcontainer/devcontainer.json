@@ -1,0 +1,10 @@
+{
+    "name": "Rails Dev Environment",
+    "dockerComposeFile": "compose.yaml",
+    "service": "web",
+    "workspaceFolder": "/app",
+    "forwardPorts": [3000],
+    "postCreateCommand": "bundle install && yarn install",
+    "remoteUser": "root"
+  }
+  

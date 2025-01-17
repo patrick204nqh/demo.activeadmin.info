@@ -4,6 +4,7 @@ ruby "3.3.4"
 
 gem "rails", "~> 7.2.0"
 gem "sqlite3"
+gem "pg"
 gem "puma"
 
 gem "sprockets-rails"
