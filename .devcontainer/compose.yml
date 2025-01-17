@@ -1,5 +1,20 @@
 version: '3.8'
 
+x-common-env: &common-env
+  POSTGRES_USER: ${POSTGRES_USER}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  POSTGRES_DB: ${POSTGRES_DB}
+
+x-common-networks: &common-networks
+  networks:
+    - internal_network
+    - external_network
+
+x-healthcheck: &healthcheck
+  interval: 10s
+  timeout: 5s
+  retries: 3
+
 services:
   web:
     build:
@@ -10,33 +25,53 @@ services:
       - "5000:5000"
     volumes:
       - "..:/app"
+      - gems_cache:/usr/local/bundle
     env_file:
       - .env
     depends_on:
       db:
         condition: service_healthy
-    networks:
-      - external_network
-      - internal_network
+      mailhog:
+        condition: service_started
+    <<: *common-networks
+    
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+    <<: *common-networks
 
   db:
     image: postgres:15
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      <<: *common-env
     volumes:
       - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      <<: *healthcheck
     networks:
       - internal_network
 
+  dbeaver:
+    image: dbeaver/cloudbeaver:latest
+    ports:
+      - "8080:8978"
+    environment:
+      CB_ADMIN_NAME: ${CB_ADMIN_NAME}
+      CB_ADMIN_PASSWORD: ${CB_ADMIN_PASSWORD}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - dbeaver_data:/opt/cloudbeaver/workspace
+    <<: *common-networks
+
 volumes:
   pg_data:
+  dbeaver_data:
+  gems_cache:
 
 networks:
   external_network:

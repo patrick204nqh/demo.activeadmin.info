@@ -3,7 +3,7 @@ ActiveAdmin.register Post do
   menu label: "Articles", parent: "Blog"
 
   # Specify parameters which should be permitted for assignment
-  permit_params :title, :content, :category_id
+  permit_params :title, :content, :category_id, :image
 
   # Enable comments
   config.comments = true
