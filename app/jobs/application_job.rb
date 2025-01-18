@@ -1,7 +1,10 @@
-class ApplicationJob < ActiveJob::Base
-  # Automatically retry jobs that encountered a deadlock
-  # retry_on ActiveRecord::Deadlocked
+class ApplicationJob < Que::Job
+  self.run_at = proc { 1.seconds.from_now }
 
-  # Most jobs are safe to ignore if the underlying records are no longer available
-  # discard_on ActiveJob::DeserializationError
+  self.priority = 10
+
+  def run
+    # destroy / finish
+    raise NotImplementedError
+  end
 end

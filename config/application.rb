@@ -35,7 +35,10 @@ module ActiveAdminDemo
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-    
+    config.eager_load_paths += %W[
+      #{config.root}/app/events
+    ]
+
     # Set the default queue name for Active Job.
     config.action_mailer.deliver_later_queue_name = :default
     # config.action_mailbox.queues.incineration = :default

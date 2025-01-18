@@ -21,7 +21,8 @@ categories.each do |category|
     post = Post.create!(
       title: Faker::Book.title,
       content: Faker::Lorem.paragraphs(number: 3).join("\n\n"),
-      category: category
+      category: category,
+      author: admin
     )
     
     # Create comments for each post

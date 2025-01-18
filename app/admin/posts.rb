@@ -3,13 +3,23 @@ ActiveAdmin.register Post do
   menu label: "Articles", parent: "Blog"
 
   # Specify parameters which should be permitted for assignment
-  permit_params :title, :content, :category_id, :image
+  permit_params :title, :content, :author_id, :category_id, :image
 
   # Enable comments
   config.comments = true
 
   # For security, limit the actions that should be available
   actions :all, except: []
+
+  controller do
+    before_action :assign_author, only: [:create]
+
+    private
+
+    def assign_author
+      params[:post][:author_id] = current_user.id if action_name == 'create'
+    end
+  end
 
   # Add or remove filters to toggle their visibility
   filter :id
@@ -30,6 +40,9 @@ ActiveAdmin.register Post do
     column :category do |post|
       post.category.name
     end
+    column :author do |post|
+      post.author.email
+    end
     column :created_at
     column :updated_at
     actions
@@ -47,6 +60,7 @@ ActiveAdmin.register Post do
       row :category do |post|
         post.category.name
       end
+      row :author
       row :created_at
       row :updated_at
     end

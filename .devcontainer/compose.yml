@@ -14,6 +14,7 @@ x-common-volumes: &common-volumes
   volumes:
     - "..:/app"
     - gems_cache:/usr/local/bundle
+    - node_modules_cache:/app/node_modules
 
 x-common-build: &common-build
   build:
@@ -35,7 +36,7 @@ services:
     <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
     command: sleep infinity
     ports:
-      - "5000:5000"
+      - "4000:5000"
     env_file:
       - .env
 
@@ -44,7 +45,7 @@ services:
     command: ["bundle", "exec", "que"]
     environment:
       <<: *common-env
-      QUE_WORKER_COUNT: 4
+      QUE_WORKER_COUNT: 1
     
   mailhog:
     image: mailhog/mailhog:latest
@@ -83,6 +84,7 @@ volumes:
   pg_data:
   dbeaver_data:
   gems_cache:
+  node_modules_cache:
 
 networks:
   external_network:

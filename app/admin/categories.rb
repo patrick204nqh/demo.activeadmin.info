@@ -1,6 +1,8 @@
 ActiveAdmin.register Category do
   menu parent: "Blog"
 
+  includes :posts
+
   permit_params :name
 
   actions :all, except: []
@@ -18,6 +20,9 @@ ActiveAdmin.register Category do
     column :name
     column :created_at
     column :updated_at
+    column "Total Articles" do |category|
+      category.posts.size
+    end
     actions
   end
 

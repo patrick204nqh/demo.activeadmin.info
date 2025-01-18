@@ -273,3 +273,8 @@ ActiveAdmin.setup do |config|
   #
   # config.order_clause = MyOrderClause
 end
+
+# Extensions
+ActiveAdmin.after_load do
+  ActiveAdmin::Comment.include(CommentNotifications)
+end
