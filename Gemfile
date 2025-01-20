@@ -21,12 +21,19 @@ gem "que-view"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
+# State machine
+gem "aasm"
+
 # Image processing
 gem "image_processing"
+
+# Video processing
+gem "streamio-ffmpeg"
 
 group :development, :test do
   gem "foreman"
   gem "debug", platforms: %i[ mri windows ]
+  gem "pry"
   gem "faker"
 end
 
