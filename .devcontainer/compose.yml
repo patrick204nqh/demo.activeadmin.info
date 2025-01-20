@@ -48,13 +48,30 @@ services:
     env_file:
       - .env
 
+  # High-priority worker
   worker_high:
     <<: *worker-template
-    command: ["bundle", "exec", "que", "--worker-count", "${WORKER_HIGH_COUNT:-2}", "--worker-priorities", "${WORKER_HIGH_PRIORITIES:-0}"]
+    command: >
+      bundle exec que
+      --worker-count ${WORKER_HIGH_COUNT:-2}
+      --worker-priorities ${WORKER_HIGH_PRIORITIES:-0}
+      --queue-name critical
+      --queue-name urgent
+      --log-level ${WORKER_LOG_LEVEL:-info}
+      --poll-interval ${WORKER_POLL_INTERVAL:-5}
 
+  # Mixed-priority worker
   worker_mixed:
     <<: *worker-template
-    command: ["bundle", "exec", "que", "--worker-count", "${WORKER_MIXED_COUNT:-2}", "--worker-priorities", "${WORKER_MIXED_PRIORITIES:-5,10}"]
+    command: >
+      bundle exec que
+      --worker-count ${WORKER_MIXED_COUNT:-2}
+      --worker-priorities ${WORKER_MIXED_PRIORITIES:-5,10}
+      --queue-name default
+      --queue-name secondary
+      --queue-name low_priority
+      --log-level ${WORKER_LOG_LEVEL:-info}
+      --poll-interval ${WORKER_POLL_INTERVAL:-5}
     
   mailhog:
     image: mailhog/mailhog:latest
@@ -75,23 +92,37 @@ services:
     networks:
       - internal_network
 
-  dbeaver:
-    image: dbeaver/cloudbeaver:latest
+  # dbeaver:
+  #   image: dbeaver/cloudbeaver:latest
+  #   ports:
+  #     - "8080:8978"
+  #   environment:
+  #     CB_ADMIN_NAME: ${CB_ADMIN_NAME}
+  #     CB_ADMIN_PASSWORD: ${CB_ADMIN_PASSWORD}
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   volumes:
+  #     - dbeaver_data:/opt/cloudbeaver/workspace
+  #   <<: *common-networks
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
     ports:
-      - "8080:8978"
+      - "${PGADMIN_PORT:-5050}:80"
     environment:
-      CB_ADMIN_NAME: ${CB_ADMIN_NAME}
-      CB_ADMIN_PASSWORD: ${CB_ADMIN_PASSWORD}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@example.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-password}
     depends_on:
       db:
         condition: service_healthy
     volumes:
-      - dbeaver_data:/opt/cloudbeaver/workspace
+      - pgadmin_data:/var/lib/pgadmin
     <<: *common-networks
 
 volumes:
   pg_data:
-  dbeaver_data:
+  pgadmin_data:
   gems_cache:
   node_modules_cache:
 

@@ -40,7 +40,7 @@ module ActiveAdminDemo
     ]
 
     # Set the default queue name for Active Job.
-    config.action_mailer.deliver_later_queue_name = :default
+    # config.action_mailer.deliver_later_queue_name = :default
     # config.action_mailbox.queues.incineration = :default
     # config.action_mailbox.queues.routing = :default
     config.active_storage.queues.analysis = :default

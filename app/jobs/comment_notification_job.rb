@@ -1,7 +1,9 @@
 class CommentNotificationJob < ApplicationJob
+  self.queue = :low_priority
+
   # self.run_at = proc { 1.seconds.from_now }
 
-  self.priority = 0
+  self.priority = 8
 
   self.retry_interval = proc { |count| count * 30 }
 
