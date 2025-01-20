@@ -6,7 +6,7 @@ WORKDIR /app
 # Install Node.js 23.1.0 and Yarn
 RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
     apt-get update -qq && \
-    apt-get install -y build-essential libpq-dev libvips-dev nodejs && \
+    apt-get install -y build-essential libpq-dev libvips-dev postgresql-client nodejs && \
     npm install -g yarn
 
 # Set environment variables
@@ -26,12 +26,10 @@ COPY Gemfile Gemfile.lock ./
 RUN bundle install
 
 # Copy the rest of the application code
-COPY --chown=appuser:appuser ../ ./
+COPY ../ ./
 
-# **Corrected COPY path for entrypoint.sh**
-COPY --chown=appuser:appuser .devcontainer/entrypoint.sh /usr/bin/entrypoint.sh
-
-# Ensure the entrypoint script is executable
+# Copy the entrypoint script and ensure it's executable
+COPY .devcontainer/entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 
 # Expose Rails server port

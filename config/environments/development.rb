@@ -44,9 +44,6 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: ENV.fetch("MAILHOG_HOST", "mailhog"),
     port: ENV.fetch("MAILHOG_PORT", 1025),
-    domain: 'localhost',
-    authentication: :plain,
-    enable_starttls_auto: false
   }
 
   # Print deprecation notices to the Rails logger.
@@ -70,6 +67,8 @@ Rails.application.configure do
   # Highlight code that enqueued background job in logs.
   config.active_job.verbose_enqueue_logs = true
   config.active_job.queue_adapter = :que
+  # Disable automatically defer the enqueuing to after the transaction is committed.
+  config.active_job.enqueue_after_transaction_commit = :never
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true
