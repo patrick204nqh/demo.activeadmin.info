@@ -34,6 +34,11 @@ x-healthcheck: &healthcheck
   timeout: 5s
   retries: 3
 
+x-worker-template: &worker-template
+  <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
+  env_file:
+    - .env
+
 services:
   web:
     <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
@@ -43,12 +48,13 @@ services:
     env_file:
       - .env
 
-  que_worker:
-    <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
-    command: ["bundle", "exec", "que"]
-    environment:
-      <<: *common-env
-      QUE_WORKER_COUNT: 1
+  worker_high:
+    <<: *worker-template
+    command: ["bundle", "exec", "que", "--worker-count", "${WORKER_HIGH_COUNT:-2}", "--worker-priorities", "${WORKER_HIGH_PRIORITIES:-0}"]
+
+  worker_mixed:
+    <<: *worker-template
+    command: ["bundle", "exec", "que", "--worker-count", "${WORKER_MIXED_COUNT:-2}", "--worker-priorities", "${WORKER_MIXED_PRIORITIES:-5,10}"]
     
   mailhog:
     image: mailhog/mailhog:latest

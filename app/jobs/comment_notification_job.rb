@@ -1,7 +1,9 @@
 class CommentNotificationJob < ApplicationJob
   # self.run_at = proc { 1.seconds.from_now }
 
-  # self.priority = 10
+  self.priority = 0
+
+  self.retry_interval = proc { |count| count * 30 }
 
   def run(comment_id)
     puts "Running CommentNotificationJob for comment_id: #{comment_id}"
