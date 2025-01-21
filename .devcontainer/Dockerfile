@@ -3,11 +3,22 @@ FROM ruby:3.3.4
 # Set working directory
 WORKDIR /app
 
-# Install Node.js 23.1.0 and Yarn
+# Install dependencies
+RUN apt-get update -qq && \
+    apt-get install -y \
+    curl \
+    build-essential \
+    libpq-dev \
+    libvips-dev \
+    postgresql-client \
+    ffmpeg
+
+# Install Node.js 23.1.0
 RUN curl -fsSL https://deb.nodesource.com/setup_23.x | bash - && \
-    apt-get update -qq && \
-    apt-get install -y build-essential libpq-dev libvips-dev postgresql-client nodejs && \
-    npm install -g yarn
+    apt-get install -y nodejs
+
+# Install Yarn
+RUN npm install -g yarn
 
 # Set environment variables
 ENV LANG=C.UTF-8

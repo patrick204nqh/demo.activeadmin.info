@@ -41,6 +41,7 @@ x-worker-template: &worker-template
 
 services:
   web:
+    image: activeadmindemo/web:latest
     <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
     command: sleep infinity
     ports:
@@ -50,6 +51,7 @@ services:
 
   # High-priority worker
   worker_high:
+    image: activeadmindemo/worker:latest
     <<: *worker-template
     command: >
       bundle exec que
@@ -62,6 +64,7 @@ services:
 
   # Mixed-priority worker
   worker_mixed:
+    image: activeadmindemo/worker:latest
     <<: *worker-template
     command: >
       bundle exec que

@@ -11,7 +11,7 @@ class Video < ApplicationRecord
     state :failed
 
     event :process do
-      transitions from: :pending, to: :processing
+      transitions from: :pending, to: :processing, after: :enqueue_processing
     end
 
     event :complete do
@@ -23,15 +23,19 @@ class Video < ApplicationRecord
     end
   end
 
-  after_commit :enqueue_processing, if: :pending?
+  after_commit :start_processing, on: :create, if: -> { pending? && file.attached? }
 
   private
 
-  def enqueue_processing
-    return unless file.attached?
+  def start_processing
+    process!
+  end
 
-    puts "Enqueueing video processing for video #{self.id}"
-    binding.pry
-    ProcessVideoJob.enqueue(self.id)
+  def enqueue_processing
+    puts "Enqueueing video processing for video #{id}"
+    ProcessVideoJob.enqueue(id)
+  rescue StandardError => e
+    Rails.logger.error("Failed to enqueue processing for video #{id}: #{e.message}")
+    raise e
   end
 end
