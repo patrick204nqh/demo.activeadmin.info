@@ -44,7 +44,7 @@ COPY .devcontainer/entrypoint.sh /usr/bin/entrypoint.sh
 RUN chmod +x /usr/bin/entrypoint.sh
 
 # Expose Rails server port
-EXPOSE 5000
+EXPOSE 3000
 
 # Set entrypoint
 ENTRYPOINT ["entrypoint.sh"]

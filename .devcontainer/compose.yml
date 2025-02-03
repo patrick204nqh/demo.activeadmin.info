@@ -45,7 +45,7 @@ services:
     <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
     command: sleep infinity
     ports:
-      - "4000:5000"
+      - "3000:3000"
     env_file:
       - .env
 

@@ -15,7 +15,7 @@ https://activeadmin-demo.onrender.com
 - `bin/rails db:seed`
 - `bin/dev`
 
-Open http://localhost:5000 and login using `admin@example.com` and `password`.
+Open http://localhost:3000 and login using `admin@example.com` and `password`.
 
 ### Tests
 

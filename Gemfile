@@ -30,6 +30,9 @@ gem "image_processing"
 # Video processing
 gem "streamio-ffmpeg"
 
+# AWS
+# gem "aws-sdk-s3"
+
 group :development, :test do
   gem "foreman"
   gem "debug", platforms: %i[ mri windows ]
