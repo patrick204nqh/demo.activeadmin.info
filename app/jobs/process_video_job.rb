@@ -60,6 +60,8 @@ class ProcessVideoJob < ApplicationJob
       resolution: "1280x720", # 720p
       video_codec: "libx264",
       audio_codec: "aac",
+      watermark: Rails.root.join("app/assets/images/watermark.png").to_s,
+      watermark_filter: { position: "RT", padding_x: 10, padding_y: 10 },
       custom: ["-preset", "slow", "-crf", "23", "-b:v", "1000k", "-maxrate", "1200k", "-bufsize", "2000k"]
     }
 
