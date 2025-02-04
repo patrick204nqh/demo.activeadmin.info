@@ -21,10 +21,12 @@ ActiveAdmin.register Video do
     column :title
     column :status
     column "Original File" do |video|
-      link_to(video.file.filename.to_s, rails_blob_path(video.file, disposition: "attachment")) if video.file.attached?
+      # link_to(video.file.filename.to_s, rails_blob_path(video.file, disposition: "attachment")) if video.file.attached?
+      video_tag(video.file.url(expires_in: 1.hour), controls: true, controls: true, width: "400") if video.file.attached?
     end
     column "Processed File" do |video|
-      link_to("Download", rails_blob_path(video.processed_file, disposition: "attachment")) if video.processed_file.attached?
+      # link_to("Download", rails_blob_path(video.processed_file, disposition: "attachment")) if video.processed_file.attached?
+      video_tag(video.processed_file.url(expires_in: 1.hour), controls: true, controls: true, width: "400") if video.processed_file.attached?
     end
     column :created_at
     column :updated_at

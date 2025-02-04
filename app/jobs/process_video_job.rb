@@ -16,16 +16,43 @@ class ProcessVideoJob < ApplicationJob
   def valid_video?(video)
     return false unless video&.file.attached?
 
-    video_path = fetch_video_path(video)
-    return false unless video_path && File.exist?(video_path)
-
     true
+  end
+
+  def fetch_video_path(video)
+    return nil unless video.file.attached?
+
+    begin
+      url = video.file.url(expires_in: 600) # Generate a signed URL
+
+      output_path = Rails.root.join("tmp", "video_#{video.id}.mp4").to_s
+      download_video(url, output_path)
+    rescue => e
+      puts "⚠️ Error fetching video path: #{e.message}"
+      nil
+    end
+  end
+
+  def download_video(url, output_path)
+    uri = URI.parse(url)
+    response = Net::HTTP.get_response(uri)
+
+    if response.is_a?(Net::HTTPSuccess)
+      File.open(output_path, "wb") { |file| file.write(response.body) }
+      puts "✅ Video saved to: #{output_path}"
+      return output_path
+    else
+      puts "❌ Error downloading video: #{response.code} #{response.message}"
+      return nil
+    end
   end
 
   def process_video(video)
     puts "🎬 Processing video ID: #{video.id}, Status: #{video.status}"
 
     video_path = fetch_video_path(video)
+    return unless video_path && File.exist?(video_path)
+
     processed_path = generate_processed_path
 
     begin
@@ -40,15 +67,9 @@ class ProcessVideoJob < ApplicationJob
       puts "❌ Processing failed: #{e.message}"
       puts e.backtrace.join("\n")
     ensure
+      cleanup_temp_file(video_path)
       cleanup_temp_file(processed_path)
     end
-  end
-
-  def fetch_video_path(video)
-    ActiveStorage::Blob.service.path_for(video.file.blob.key)
-  rescue => e
-    puts "⚠️ Error fetching video path: #{e.message}"
-    nil
   end
 
   def generate_processed_path
@@ -61,8 +82,8 @@ class ProcessVideoJob < ApplicationJob
       video_codec: "libx264",
       audio_codec: "aac",
       watermark: Rails.root.join("app/assets/images/watermark.png").to_s,
-      watermark_filter: { position: "RT", padding_x: 10, padding_y: 10 },
-      custom: ["-preset", "slow", "-crf", "23", "-b:v", "1000k", "-maxrate", "1200k", "-bufsize", "2000k"]
+      watermark_filter: { position: "RT", padding_x: 20, padding_y: 20 },
+      custom: ["-preset", "fast", "-crf", "28"]
     }
 
     movie.transcode(output_path, options)
