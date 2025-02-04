@@ -34,15 +34,19 @@ x-healthcheck: &healthcheck
   timeout: 5s
   retries: 3
 
-x-worker-template: &worker-template
+x-base-service: &base-service
   <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
   env_file:
     - .env
 
+x-base-worker: &base-worker
+  <<: *base-service
+  entrypoint: [""]  # Skip entrypoint for workers
+
 services:
   web:
     image: activeadmindemo/web:latest
-    <<: [*common-build, *common-volumes, *common-depends-on, *common-networks]
+    <<: *base-service
     command: sleep infinity
     ports:
       - "3000:3000"
@@ -52,7 +56,7 @@ services:
   # High-priority worker
   worker_high:
     image: activeadmindemo/worker:latest
-    <<: *worker-template
+    <<: *base-worker
     command: >
       bundle exec que
       --worker-count ${WORKER_HIGH_COUNT:-2}
@@ -65,7 +69,7 @@ services:
   # Mixed-priority worker
   worker_mixed:
     image: activeadmindemo/worker:latest
-    <<: *worker-template
+    <<: *base-worker
     command: >
       bundle exec que
       --worker-count ${WORKER_MIXED_COUNT:-2}

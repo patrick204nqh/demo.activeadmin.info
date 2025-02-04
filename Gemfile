@@ -31,7 +31,7 @@ gem "image_processing"
 gem "streamio-ffmpeg"
 
 # AWS
-# gem "aws-sdk-s3"
+gem "aws-sdk-s3"
 
 group :development, :test do
   gem "foreman"
