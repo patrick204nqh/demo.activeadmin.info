@@ -4,102 +4,85 @@ class ProcessVideoJob < ApplicationJob
 
   def run(video_id)
     video = Video.find_by(id: video_id)
-    return unless valid_video?(video)
+    return unless video&.uploaded?
 
-    process_video(video)
+    video_path = download_video(video.file)
+    return unless video_path
 
-    finish
+    begin
+      video.process!
+      puts "🎥 Processing video: #{video.id}"
+
+      process_video(video_path, video)
+
+      video.complete!
+      puts "✅ Video processed: #{video.id}"
+    rescue => e
+      puts "❌ Error processing video: #{e.message}"
+      puts "Backtrace:\n#{e.backtrace.join("\n")}"
+      video.fail!
+    ensure
+      cleanup_tempfile(video_path)
+      finish
+    end
   end
 
   private
 
-  def valid_video?(video)
-    return false unless video&.file.attached?
+  def download_video(file)
+    return unless file.attached?
 
-    true
-  end
+    temp_path = generate_tempfile("original", ".mp4")
 
-  def fetch_video_path(video)
-    return nil unless video.file.attached?
-
-    begin
-      url = video.file.url(expires_in: 600) # Generate a signed URL
-
-      output_path = Rails.root.join("tmp", "video_#{video.id}.mp4").to_s
-      download_video(url, output_path)
-    rescue => e
-      puts "⚠️ Error fetching video path: #{e.message}"
-      nil
+    File.open(temp_path, "wb") do |f|
+      f.write(file.download)
     end
+
+    temp_path
+  rescue StandardError => e
+    puts "❌ Error downloading video: #{e.message}"
+    puts "Backtrace:\n#{e.backtrace.join("\n")}"
+    nil
   end
 
-  def download_video(url, output_path)
-    uri = URI.parse(url)
-    response = Net::HTTP.get_response(uri)
-
-    if response.is_a?(Net::HTTPSuccess)
-      File.open(output_path, "wb") { |file| file.write(response.body) }
-      puts "✅ Video saved to: #{output_path}"
-      return output_path
-    else
-      puts "❌ Error downloading video: #{response.code} #{response.message}"
-      return nil
-    end
-  end
-
-  def process_video(video)
-    puts "🎬 Processing video ID: #{video.id}, Status: #{video.status}"
-
-    video_path = fetch_video_path(video)
-    return unless video_path && File.exist?(video_path)
-
-    processed_path = generate_processed_path
-
-    begin
-      movie = FFMPEG::Movie.new(video_path)
-      transcode_video(movie, processed_path)
-      attach_processed_video(video, processed_path)
-
-      video.complete!
-      puts "✅ Video processing completed: #{processed_path}"
-    rescue => e
-      video.fail!
-      puts "❌ Processing failed: #{e.message}"
-      puts e.backtrace.join("\n")
-    ensure
-      cleanup_temp_file(video_path)
-      cleanup_temp_file(processed_path)
-    end
-  end
-
-  def generate_processed_path
-    Rails.root.join("tmp", "processed_#{SecureRandom.hex}.mp4").to_s
-  end
-
-  def transcode_video(movie, output_path)
-    options = {
-      resolution: "1280x720", # 720p
-      video_codec: "libx264",
-      audio_codec: "aac",
-      watermark: Rails.root.join("app/assets/images/watermark.png").to_s,
-      watermark_filter: { position: "RT", padding_x: 20, padding_y: 20 },
-      custom: ["-preset", "fast", "-crf", "28"]
+  def process_video(input_path, video)
+    resolutions = {
+      "360p" => { width: 640, height: 360 },
+      "720p" => { width: 1280, height: 720 },
+      "1080p" => { width: 1920, height: 1080 }
     }
 
-    movie.transcode(output_path, options)
+    resolutions.each do |label, size|
+      output_path = generate_tempfile(label)
+
+      transcoder = FFMPEG::Movie.new(input_path)
+      transcoder.transcode(output_path, video_options(size))
+
+      attach_video(video, output_path, label)
+      cleanup_tempfile(output_path)
+    end
   end
 
-  def attach_processed_video(video, processed_path)
-    return unless File.exist?(processed_path)
-
-    video.processed_file.attach(
-      io: File.open(processed_path),
-      filename: File.basename(processed_path),
-      content_type: "video/mp4"
-    )
+  def video_options(size)
+    {
+      video_codec: "libx264",
+      resolution: "#{size[:width]}x#{size[:height]}",
+      audio_codec: "aac",
+      custom: ["-preset", "fast", "-crf", "28"]
+    }
   end
 
-  def cleanup_temp_file(file_path)
+  def attach_video(video, file_path, label)
+    video.send("video_#{label}").attach(io: File.open(file_path), filename: "#{label}.mp4")
+  end
+
+  def generate_tempfile(label, ext = ".mp4")
+    Tempfile.new([label, ext]).tap(&:close).path
+  end
+
+  def cleanup_tempfile(file_path)
     File.delete(file_path) if File.exist?(file_path)
+  rescue => e
+    puts "⚠️ Error cleaning up tempfile: #{e.message}"
   end
 end

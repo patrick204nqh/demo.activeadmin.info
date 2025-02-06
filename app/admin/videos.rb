@@ -22,11 +22,7 @@ ActiveAdmin.register Video do
     column :status
     column "Original File" do |video|
       # link_to(video.file.filename.to_s, rails_blob_path(video.file, disposition: "attachment")) if video.file.attached?
-      video_tag(video.file.url(expires_in: 1.hour), controls: true, controls: true, width: "400") if video.file.attached?
-    end
-    column "Processed File" do |video|
-      # link_to("Download", rails_blob_path(video.processed_file, disposition: "attachment")) if video.processed_file.attached?
-      video_tag(video.processed_file.url(expires_in: 1.hour), controls: true, controls: true, width: "400") if video.processed_file.attached?
+      video_tag(video.file.url(expires_in: 1.hour), controls: true, width: "400") if video.file.attached?
     end
     column :created_at
     column :updated_at
@@ -41,6 +37,25 @@ ActiveAdmin.register Video do
       row :status
       row :created_at
       row :updated_at
+
+      row "Original Video" do |video|
+        if video.file.attached?
+          video_tag(video.file.url(expires_in: 1.hour), controls: true, width: "400")
+        else
+          "No Original Video Available"
+        end
+      end
+
+      ["360p", "720p", "1080p"].each do |resolution|
+        row "#{resolution} Video" do |video|
+          processed_video = video.send("video_#{resolution}")
+          if processed_video.attached?
+            video_tag(processed_video.url(expires_in: 1.hour), controls: true, width: "400")
+          else
+            "Processing not completed"
+          end
+        end
+      end
     end
   end
 
@@ -54,18 +69,19 @@ ActiveAdmin.register Video do
     f.actions
   end
 
-  # member_action :retry, method: :post do
-  #   video = Video.find(params[:id])
-  #   if video.failed?
-  #     video.process! # Transition back to processing
-  #     ProcessVideoJob.perform_later(video.id)
-  #     redirect_to admin_video_path(video), notice: "Video re-enqueued for processing."
-  #   else
-  #     redirect_to admin_video_path(video), alert: "Retry is only allowed for failed videos."
-  #   end
-  # end
+  member_action :retry, method: :post do
+    video = Video.find(params[:id])
 
-  # action_item :retry, only: :show, if: proc { video.failed? } do
-  #   link_to "Retry Processing", retry_admin_video_path(video), method: :post
-  # end
+    if video.failed?
+      video.process! # Transition back to processing
+      ProcessVideoJob.perform_later(video.id)
+      redirect_to admin_video_path(video), notice: "Video re-enqueued for processing."
+    else
+      redirect_to admin_video_path(video), alert: "Retry is only allowed for failed videos."
+    end
+  end
+
+  action_item :retry, only: :show, if: proc { resource.failed? } do
+    link_to "Retry Processing", retry_admin_video_path(resource), method: :post
+  end
 end
