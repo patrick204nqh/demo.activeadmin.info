@@ -42,6 +42,14 @@ ActiveAdmin.register Video do
       row :id
       row :title
       row :status
+      row :processing_metadata do |video|
+        details do
+          summary "View Full Metadata"
+          div do
+            pre JSON.pretty_generate(video.processing_metadata || {})
+          end
+        end
+      end
       row :created_at
       row :updated_at
 
