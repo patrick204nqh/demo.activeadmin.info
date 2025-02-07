@@ -8,7 +8,7 @@ class ThumbnailGenerator
     thumbnail_path = VideoTempfileHelper.generate("thumbnail", ".jpg")
 
     movie = FFMPEG::Movie.new(@video_path)
-    movie.screenshot(thumbnail_path, seek_time: 5, resolution: "640x360")
+    movie.screenshot(thumbnail_path, seek_time: 1, resolution: "640x360")
 
     @video.thumbnail.attach(io: File.open(thumbnail_path), filename: "thumbnail.jpg")
 
