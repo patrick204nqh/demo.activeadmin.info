@@ -14,14 +14,9 @@ class VideoDownloader
 
     temp_path
   rescue StandardError => e
-    log_error("Error downloading video", e)
+    puts "❌ Error downloading video: #{e.message}"
+    puts "Backtrace:\n#{e.backtrace.join("\n")}"
+    @video.log_error("Error downloading video", e)
     nil
-  end
-
-  private
-
-  def log_error(message, exception)
-    puts "❌ #{message}: #{exception.message}"
-    puts "Backtrace:\n#{exception.backtrace.join("\n")}"
   end
 end

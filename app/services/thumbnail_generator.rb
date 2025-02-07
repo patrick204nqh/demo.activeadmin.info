@@ -14,13 +14,8 @@ class ThumbnailGenerator
 
     VideoTempfileHelper.cleanup(thumbnail_path)
   rescue StandardError => e
-    log_error("Error generating thumbnail", e)
-  end
-
-  private
-
-  def log_error(message, exception)
-    puts "❌ #{message}: #{exception.message}"
-    puts "Backtrace:\n#{exception.backtrace.join("\n")}"
+    puts "❌ Error generating thumbnail}: #{e.message}"
+    puts "Backtrace:\n#{e.backtrace.join("\n")}"
+    @video.log_error("Error generating thumbnail", e)
   end
 end

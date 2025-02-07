@@ -22,7 +22,9 @@ class VideoProcessor
       VideoTempfileHelper.cleanup(output_path)
     end
   rescue StandardError => e
-    log_error("Error processing video resolutions", e)
+    puts "❌ Error processing video resolutions: #{e.message}"
+    puts "Backtrace:\n#{e.backtrace.join("\n")}"
+    @video.log_error("Error processing video resolutions", e)
   end
 
   private
@@ -34,10 +36,5 @@ class VideoProcessor
       audio_codec: "aac",
       custom: ["-preset", "fast", "-crf", "28"]
     }
-  end
-
-  def log_error(message, exception)
-    puts "❌ #{message}: #{exception.message}"
-    puts "Backtrace:\n#{exception.backtrace.join("\n")}"
   end
 end
