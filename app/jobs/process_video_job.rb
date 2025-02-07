@@ -1,6 +1,8 @@
 class ProcessVideoJob < ApplicationJob
   self.queue = :critical
   self.priority = 4
+  self.retry_interval = 5
+  self.maximum_retry_count = 2
 
   def run(video_id)
     video = Video.find_by(id: video_id)
@@ -16,21 +18,18 @@ class ProcessVideoJob < ApplicationJob
       ThumbnailGenerator.new(video, video_path).generate
       VideoProcessor.new(video, video_path).process
 
-      video.complete!
       puts "✅ Video processed: #{video.id}"
+      video.complete!
     rescue => e
-      log_error("Error processing video", e)
+      puts "❌ Error processing video: #{e.message}"
+      puts "Backtrace:\n#{e.backtrace.join("\n")}"
+      video.log_error("Error processing video", e)
       video.fail!
     ensure
       FileUtils.cleanup(video_path)
+      puts "🧹 Cleaned up video: #{video.id}"
       finish
-    end
-
-    private
-
-    def log_error(message, exception)
-      puts "❌ #{message}: #{exception.message}"
-      puts "Backtrace:\n#{exception.backtrace.join("\n")}"
+      puts "🏁 Finished processing video: #{video.id}"
     end
   end
 end

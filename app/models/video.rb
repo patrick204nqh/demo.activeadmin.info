@@ -36,6 +36,17 @@ class Video < ApplicationRecord
   before_destroy :purge_files
   after_commit :attempt_upload, if: -> { file.attached? && init? }
 
+  def log_error(message, exception = nil)
+    self.processing_metadata ||= {}
+    self.processing_metadata["last_error"] = {
+      message: message,
+      details: exception&.message,
+      backtrace: exception&.backtrace&.take(10), # Limit backtrace size
+      occurred_at: Time.current
+    }
+    save!
+  end
+
   private
 
   def validate_file_format
