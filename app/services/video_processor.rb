@@ -21,10 +21,6 @@ class VideoProcessor
 
       VideoTempfileHelper.cleanup(output_path)
     end
-  rescue StandardError => e
-    puts "❌ Error processing video resolutions: #{e.message}"
-    puts "Backtrace:\n#{e.backtrace.join("\n")}"
-    @video.log_error("Error processing video resolutions", e)
   end
 
   private

@@ -13,9 +13,5 @@ class ThumbnailGenerator
     @video.thumbnail.attach(io: File.open(thumbnail_path), filename: "thumbnail.jpg")
 
     VideoTempfileHelper.cleanup(thumbnail_path)
-  rescue StandardError => e
-    puts "❌ Error generating thumbnail}: #{e.message}"
-    puts "Backtrace:\n#{e.backtrace.join("\n")}"
-    @video.log_error("Error generating thumbnail", e)
   end
 end

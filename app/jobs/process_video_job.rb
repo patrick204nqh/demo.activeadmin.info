@@ -18,18 +18,19 @@ class ProcessVideoJob < ApplicationJob
       ThumbnailGenerator.new(video, video_path).generate
       VideoProcessor.new(video, video_path).process
 
-      puts "✅ Video processed: #{video.id}"
       video.complete!
+      puts "✅ Video processed: #{video.id}"
+
+      FileUtils.cleanup(video_path)
+      puts "🧹 Cleaned up video: #{video.id}"
+
+      finish
+      puts "🏁 Finished processing video: #{video.id}"
     rescue => e
       puts "❌ Error processing video: #{e.message}"
       puts "Backtrace:\n#{e.backtrace.join("\n")}"
       video.log_error("Error processing video", e)
       video.fail!
-    ensure
-      FileUtils.cleanup(video_path)
-      puts "🧹 Cleaned up video: #{video.id}"
-      finish
-      puts "🏁 Finished processing video: #{video.id}"
     end
   end
 end
