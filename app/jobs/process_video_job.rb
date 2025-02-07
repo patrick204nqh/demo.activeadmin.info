@@ -2,7 +2,7 @@ class ProcessVideoJob < ApplicationJob
   self.queue = :critical
   self.priority = 4
   self.retry_interval = 5
-  self.maximum_retry_count = 2
+  self.maximum_retry_count = 3
 
   def run(video_id)
     video = Video.find_by(id: video_id)

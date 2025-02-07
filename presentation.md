@@ -1,0 +1,81 @@
+# FFmpeg: Powerful Multimedia Processing
+- Agenda
+    - ...
+- What is FFmpeg?
+    - Definition
+        - "FFmpeg is an open-source multimedia framework that handles video/audio processing, conversion, and streaming."
+        - [image] (FFmpeg processing workflow)
+    - Popular Tools/Platforms Using FFmpeg​
+        - [image] (include Youtube, Vimeo, Tiktok, ...)
+        - Reference: https://trac.ffmpeg.org/wiki/Projects​
+- Pros and Cons of FFmpeg
+    - Pros
+        - Open-source and free to use
+            - [image] supported formats
+        - Supports almost all video/audio formats
+        - High performance for processing and conversion
+        - Integrates with many frameworks, including Rails
+    - Cons
+        - Steep learning curve for beginners
+        - Requires command-line knowledge
+- Limitations & Cautions
+    - Limitations
+        - Some proprietary codecs require licensing for commercial use.
+        - Performance depends on system hardware and optimization.
+        - Complex command-line syntax can be overwhelming.
+    - Cautions
+        - Using incorrect parameters can result in unexpected quality loss.
+        - Large media files may require significant CPU/GPU resources.
+        - Legal considerations: Some codecs (e.g., H.264, AAC) may have patent restrictions in certain regions.
+        - Version differences: Some FFmpeg flags and behaviors change across versions, leading to unexpected results.
+- Use cases
+    - Convert videos to different formats
+    - Generate video thumbnails.
+    - Extract metadata (like title, description, duration, ...)
+    - Compress videos
+- How to use FFmpeg in Rails?
+    - Use `streamio-ffmpeg` gem
+        - Provides a Ruby wrapper around FFmpeg.
+        - Allows easy integration with Rails applications.
+    - Basic FFmpeg Usage Examples (with `streamio-ffmpeg` gem)
+        - Convert a video format
+            - [code]
+        - Generate a thumbnail from a video
+            - [code]
+        - Extract metadata from a video
+            - [code]
+        - Trim a video
+            - [code]
+- Comparing FFmpeg with other tools (FFmpeg, HandBrake, GStreamer)
+    - Criterias
+        - Open source
+        - Cross-platform
+        - Format conversion
+        - Integrate with Rails
+    - Summary
+        - FFmpeg will be suitable for ...
+- How to apply into Rails?
+    - Upload video with Active Storage
+        - Setting up Active Storage
+            - [code]
+        - Define in Video model
+            - [code]
+    - Background job for video processing
+        - Define processing video job
+            - [code]
+    - Trigger job after video uploaded
+        - Call job in Video model after file uploaded
+            - [code]
+- Project Demo
+    - Requirements
+        - Upload video
+        - Process video in background job
+            - Process video into 3 resolutions
+            - Extract thumbnail from video
+        - State management of video item
+        - Show playback & thumbnail on Admin page
+    - Solution
+        - Split tasks (not visible)
+    - [video]
+- Final
+    - say `Thank you`
