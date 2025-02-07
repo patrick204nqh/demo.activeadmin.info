@@ -2,6 +2,7 @@ class Video < ApplicationRecord
   include AASM
 
   has_one_attached :file
+  has_one_attached :thumbnail
   has_one_attached :video_360p
   has_one_attached :video_720p
   has_one_attached :video_1080p

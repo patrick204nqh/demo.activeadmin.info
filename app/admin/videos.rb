@@ -20,10 +20,17 @@ ActiveAdmin.register Video do
     id_column
     column :title
     column :status
-    column "Original File" do |video|
-      # link_to(video.file.filename.to_s, rails_blob_path(video.file, disposition: "attachment")) if video.file.attached?
-      video_tag(video.file.url(expires_in: 1.hour), controls: true, width: "400") if video.file.attached?
+    column "Thumbnail" do |video|
+      if video.thumbnail.attached?
+        image_tag(video.thumbnail.url, width: "100")
+      else
+        "No Thumbnail Available"
+      end
     end
+    # column "Original File" do |video|
+      # link_to(video.file.filename.to_s, rails_blob_path(video.file, disposition: "attachment")) if video.file.attached?
+    #   video_tag(video.file.url(expires_in: 1.hour), controls: true, width: "400") if video.file.attached?
+    # end
     column :created_at
     column :updated_at
     actions

@@ -5,7 +5,7 @@
 
 ## Requirements
 
-- Validate file types like MP4, AVI,...
+- Validate file types like MP4, ...
 - State management for processing video life cycle
 - Push video processing to background job
 - Convert the video into three resolutions: `360p`, `720p`, `1080p`
@@ -20,9 +20,9 @@
 - [x] Add validate types (MP4) before uploading video
 - [x] Change status to uploaded after passed validate
 - [x] Convert video into 3 resolutions: `360p`, `720p`, `1080p` and change status to done
-- [ ] Show video with all resolutions (`original`, `360p`, `720p`, `1080p`) in `ActiveAdmin` (1)
+- [x] Show video with all resolutions (`original`, `360p`, `720p`, `1080p`) in `ActiveAdmin` (1)
 - [ ] Change status to failed after retries several times
 - [ ] Add `:processing_error` attribute to `Video` model
 - [ ] Save error reason into `:processing_error` and display in `ActiveAdmin`
-- [ ] Extract thumbnails when processing video
-- [ ] Show thumbnails in `ActiveAdmin` (2)
+- [x] Extract thumbnails when processing video
+- [x] Show thumbnails in `ActiveAdmin` (2)
